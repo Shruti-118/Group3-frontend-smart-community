@@ -185,7 +185,7 @@ async function handleGoogleSuccess(credentialResponse) {
 
     // Send the Google token to your backend.
     // Replace this endpoint if your backend uses a different route.
-    const response = await fetch(API_URL + "/api/auth/google", {
+    const response = await fetch("https://smartcommunity-2jf8.onrender.com/oauth2/authorization/google", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
