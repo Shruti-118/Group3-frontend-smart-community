@@ -1,0 +1,1 @@
+export const API_URL = "https://smartcommunity-2jf8.onrender.com";
