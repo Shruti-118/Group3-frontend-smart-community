@@ -92,36 +92,69 @@ async function getWithToken(path) {
   }
   return await response.json();
 }
-
+// Sends authenticated requests to the backend
+async function serverRequest(path, method = "GET", body = null) {
+  const response = await fetch(API_URL + "/api" + path, {
+    method,
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("token"),
+      ...(body !== null && {
+        "Content-Type": "application/json",
+      }),
+    },
+    ...(body !== null && {
+      body: JSON.stringify(body),
+    }),
+  });
+  // Handle expired or invalid login tokens
+  if (response.status === 401) {
+    throw new Error("UNAUTHORIZED");
+  }
+  // Read the response if the backend returns JSON
+  const contentType = response.headers.get("content-type") || "";
+  let data = null;
+  if (contentType.includes("application/json")) {
+    data = await response.json();
+  }
+  if (!response.ok) {
+    throw new Error(
+      data?.message ||
+        data?.error ||
+        `Request failed with status ${response.status}`
+    );
+  }
+  return data;
+}
 // The backend calls communities "servers". This changes one server from the
 // backend into the shape our cards use (name, icon, members, ...).
 // TODO: if your backend teammate uses different field names, change them here.
 function serverToCommunity(server) {
   let role = "Member";
-  if (typeof server.role === "string" && server.role !== "") {
-    // OWNER / owner -> Owner
-    role = server.role.charAt(0).toUpperCase() + server.role.slice(1).toLowerCase();
-  }
 
-  let members = 0;
-  if (typeof server.memberCount === "number") {
-    members = server.memberCount;
-  } else if (typeof server.members === "number") {
-    members = server.members;
+  if (typeof server.role === "string" && server.role !== "") {
+    role =
+      server.role.charAt(0).toUpperCase() +
+      server.role.slice(1).toLowerCase();
   }
+  const members =
+    typeof server.memberCount === "number"
+      ? server.memberCount
+      : Array.isArray(server.members)
+        ? server.members.length
+        : 0;
 
   return {
     id: server.id,
     name: server.name,
     icon: server.icon || "🌐",
     color: server.color || "#5b44d8",
-    members: members,
-    desc: server.description || server.desc || "",
+    members,
+    desc: server.description || "",
     joined: true,
-    role: role,
+    role,
+    iconUrl: server.iconUrl || "",
   };
 }
-
 // menu shown in the left sidebar
 const menuList = [
   { name: "Dashboard", icon: "🏠" },
@@ -249,41 +282,38 @@ function UserDashboard() {
   //   servers                 -> communities (My community and the stats)
   //   conversationCount       -> shown in the profile window
   //   unreadNotificationCount -> the red number on the bell
-  useEffect(() => {
+    useEffect(() => {
     async function loadDashboard() {
       try {
-        const data = await getWithToken("/dashboard");
-        setProfile(data.profile);
-        setCommunities((data.servers || []).map(serverToCommunity));
-        setConversationCount(data.conversationCount || 0);
-        setUnread(data.unreadNotificationCount || 0);
+        const data = await serverRequest("/servers");
+
+        const serverList = Array.isArray(data)
+          ? data
+          : data?.servers || [];
+
+        setCommunities(serverList.map(serverToCommunity));
         setLoadError("");
       } catch (err) {
         if (err.message === "UNAUTHORIZED") {
-          handleLogout(); // the login has expired, go to the login page
+          handleLogout();
           return;
         }
+
         setLoadError(
-          "Could not load your dashboard. Please check that the backend is running and try again."
+          err.message || "Could not load your communities."
         );
+      } finally {
+        setLoaded(true);
       }
-      setLoaded(true);
     }
 
     loadDashboard();
-  }, []);
+    }, []);
   // ===========================================================================
 
   function addActivity(a) {
     const newItem = { id: Date.now() + Math.random(), color: "#5b44d8", ...a };
     setActivities((old) => [newItem, ...old].slice(0, 7));
-  }
-
-  // ---------------- change the communities list ----------------
-  // TODO (backend): join, leave and create are not saved on the server yet.
-  // They only change the list on this page until you connect their APIs.
-  function updateCommunities(newList) {
-    setCommunities(newList);
   }
 
   // ---------------- scrolling ----------------
@@ -347,147 +377,145 @@ function UserDashboard() {
 
     setProfileLoading(false);
   }
-
   // ---------------- join a community ----------------
-  function handleJoin(id) {
-    const community = communities.find((c) => c.id === id);
-    if (!community) {
-      return;
-    }
-
-    // ======================= BACKEND: JOIN COMMUNITY =======================
-    // TODO (backend): save on the server that this user joined this community:
-    // await fetch("http://localhost:8080/api/communities/" + id + "/join", {
-    //   method: "POST",
-    //   headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-    // });
-    // if it fails, show an error and do not change the list below
-    // (to use await, write: async function handleJoin(id) )
-    // =======================================================================
-
-    updateCommunities(
-      communities.map((c) =>
-        c.id === id
-          ? { ...c, joined: true, role: "Member", members: c.members + 1 }
-          : c
-      )
+  async function handleJoin(id) {
+    const community = communities.find(
+      (c) => String(c.id) === String(id)
     );
 
-    addNotification({
-      icon: "🎉",
-      color: community.color,
-      title: "You joined " + community.name,
-      where: "Welcome to the community!",
-    });
-    addActivity({
-      name: "You",
-      color: community.color,
-      community: community.name,
-      text: "Excited to be here and meet everyone!",
-      time: "Just now",
-    });
+    if (!community || community.joined) return;
+
+    try {
+      await serverRequest(
+        `/servers/${encodeURIComponent(id)}/members`,
+        "POST"
+      );
+
+      // Reload the user's communities from the backend after joining.
+      const serverData = await serverRequest("/servers");
+      const serverList = Array.isArray(serverData)
+        ? serverData
+        : serverData?.servers || [];
+
+      setCommunities(serverList.map(serverToCommunity));
+
+      addNotification({
+        icon: "🎉",
+        color: community.color,
+        title: `You joined ${community.name}`,
+        where: "Welcome to the community!",
+      });
+
+      addActivity({
+        name: "You",
+        color: community.color,
+        community: community.name,
+        text: "Excited to be here and meet everyone!",
+        time: "Just now",
+      });
+    } catch (err) {
+      if (err.message === "UNAUTHORIZED") {
+        handleLogout();
+        return;
+      }
+      window.alert(err.message || "Could not join the community. Please try again.");
+    }
   }
 
   // ---------------- leave a community ----------------
-  function handleLeave(id) {
-    const community = communities.find((c) => c.id === id);
-    if (!community) {
-      return;
-    }
-    if (!window.confirm("Leave " + community.name + "?")) {
-      return;
-    }
-
-    // ======================= BACKEND: LEAVE COMMUNITY =======================
-    // TODO (backend): save on the server that this user left this community:
-    // await fetch("http://localhost:8080/api/communities/" + id + "/leave", {
-    //   method: "POST",
-    //   headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-    // });
-    // (to use await, write: async function handleLeave(id) )
-    // ========================================================================
-
-    updateCommunities(
-      communities.map((c) =>
-        c.id === id
-          ? { ...c, joined: false, role: "", members: Math.max(c.members - 1, 0) }
-          : c
-      )
+  async function handleLeave(id) {
+    const community = communities.find(
+      (c) => String(c.id) === String(id)
     );
 
-    addNotification({
-      icon: "👋",
-      color: community.color,
-      title: "You left " + community.name,
-      where: "You can join again anytime",
-    });
+    if (!community || community.role === "Owner") return;
+    if (!window.confirm(`Leave ${community.name}?`)) return;
 
-    // close the leave popup when nothing is left to leave
-    if (leavable.length <= 1) {
-      setShowLeave(false);
+    try {
+      await serverRequest(
+        `/servers/${encodeURIComponent(id)}/members/me`,
+        "DELETE"
+      );
+
+      // Reload the user's communities from the backend after leaving.
+      const serverData = await serverRequest("/servers");
+      const serverList = Array.isArray(serverData)
+        ? serverData
+        : serverData?.servers || [];
+      const updatedCommunities = serverList.map(serverToCommunity);
+
+      setCommunities(updatedCommunities);
+      addNotification({
+        icon: "👋",
+        color: community.color,
+        title: `You left ${community.name}`,
+        where: "You can join again anytime.",
+      });
+
+      const remainingLeavable = updatedCommunities.filter(
+        (c) => c.role !== "Owner"
+      );
+      if (remainingLeavable.length === 0) setShowLeave(false);
+    } catch (err) {
+      if (err.message === "UNAUTHORIZED") {
+        handleLogout();
+        return;
+      }
+      window.alert(err.message || "Could not leave the community. Please try again.");
     }
   }
 
   // ---------------- create a community ----------------
-  function handleCreate(e) {
+  async function handleCreate(e) {
     e.preventDefault();
+    setCreateError("");
 
-    if (newName.trim().length < 3) {
+    const trimmedName = newName.trim();
+    if (trimmedName.length < 3) {
       setCreateError("Community name must be at least 3 characters");
       return;
     }
-    if (!/[a-z]/i.test(newName)) {
+    if (!/[a-z]/i.test(trimmedName)) {
       setCreateError("Community name must contain at least one letter");
       return;
     }
-    if (communities.some((c) => c.name.toLowerCase() === newName.trim().toLowerCase())) {
+    if (communities.some((c) => c.name.toLowerCase() === trimmedName.toLowerCase())) {
       setCreateError("A community with this name already exists");
       return;
     }
 
-    // ======================= BACKEND: CREATE COMMUNITY =======================
-    // TODO (backend): send the new community to the backend. The backend saves
-    // it, makes this user the owner, and sends back the saved community
-    // (with its real id). Example:
-    // const response = await fetch("http://localhost:8080/api/communities", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + localStorage.getItem("token"),
-    //   },
-    //   body: JSON.stringify({
-    //     name: newName.trim(),
-    //     description: newDescription.trim(),
-    //   }),
-    // });
-    // const saved = await response.json();
-    // if (!response.ok) { setCreateError(saved.message); return; }
-    // (to use await, write: async function handleCreate(e) )
-    // =========================================================================
+    try {
+      const savedServer = await serverRequest("/servers", "POST", {
+        name: trimmedName,
+        description: newDescription.trim(),
+        iconUrl: "",
+      });
 
-    const newCommunity = {
-      id: Date.now(), // FAKE id, the backend will give the real one
-      name: newName.trim(),
-      icon: "🌟",
-      color: "#5b44d8",
-      members: 1,
-      desc: newDescription.trim() || "Created by you",
-      joined: true,
-      role: "Owner",
-    };
-    updateCommunities([...communities, newCommunity]);
+      // Use the backend's real server ID and data.
+      const serverData = await serverRequest("/servers");
+      const serverList = Array.isArray(serverData)
+        ? serverData
+        : serverData?.servers || [];
+      setCommunities(serverList.map(serverToCommunity));
 
-    addNotification({
-      icon: "🌟",
-      color: "#5b44d8",
-      title: "Community created",
-      where: newCommunity.name + " is ready. Invite your friends!",
-    });
+      addNotification({
+        icon: "🌟",
+        color: "#5b44d8",
+        title: "Community created",
+        where: `${savedServer?.name || trimmedName} is ready!`,
+      });
 
-    setNewName("");
-    setNewDescription("");
-    setCreateError("");
-    setShowCreate(false);
+      setNewName("");
+      setNewDescription("");
+      setCreateError("");
+      setShowCreate(false);
+    } catch (err) {
+      if (err.message === "UNAUTHORIZED") {
+        handleLogout();
+        return;
+      }
+      setCreateError(err.message || "Could not create community. Please try again.");
+    }
   }
 
   // ---------------- logout ----------------
