@@ -115,7 +115,7 @@ function CreateAccount() {
 
 // ================= BACKEND: SIGN UP (START) =================
 try {
-  const response = await fetch("https://smartcommunity-2jf8.onrender.com/api/auth/signup", {
+  const response = await fetch(API_URL + "/api/auth/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     // TODO (backend): the newest docs only show email and password.
