@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/nexora-logo.png";
+import logo from "./assets/yappy-logo.png";
 import { API_URL } from "./api";
 
 function CreateAccount() {
@@ -161,11 +161,11 @@ navigate("/verify-email", { state: { email: email } });
     <div className="login-page">
       <form className="login-box" onSubmit={handleSignup}>
         <div className="brand">
-          <img src={logo} alt="Nexora logo" className="brand-logo" />
-          <h1>Nexora</h1>
+          <img src={logo} alt="Yappy logo" className="brand-logo" />
+          <h1>Yappy</h1>
         </div>
         <h2>Create your account</h2>
-        <p className="small-text">Join Nexora today</p>
+        <p className="small-text">Join Yappy today</p>
 
         <label>Display name</label>
         <input
@@ -256,7 +256,7 @@ navigate("/verify-email", { state: { email: email } });
             <p>1. You must give correct information while creating your account.</p>
             <p>2. Keep your password safe and do not share it with anyone.</p>
             <p>3. You are responsible for everything done using your account.</p>
-            <p>4. Do not use Nexora for anything illegal or harmful.</p>
+            <p>4. Do not use Yappy for anything illegal or harmful.</p>
             <p>5. We may update these terms at any time.</p>
 
             <button

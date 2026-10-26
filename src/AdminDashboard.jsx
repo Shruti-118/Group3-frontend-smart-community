@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/nexora-logo.png";
+import logo from "./assets/yappy-logo.png";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ function AdminDashboard() {
   // TODO (backend): these are FAKE admins. Get the real list from the backend.
   // ===================================================================
   const [admins, setAdmins] = useState([
-    { id: 1, name: "Main Admin", email: "admin@nexora.com" },
+    { id: 1, name: "Main Admin", email: "admin@yappy.com" },
   ]);
 
   // add admin form
@@ -202,8 +202,8 @@ function AdminDashboard() {
       {/* ---------- left side menu ---------- */}
       <div className="ad-sidebar">
         <div className="ad-sidebar-brand">
-          <img src={logo} alt="Nexora logo" />
-          <h2>Nexora</h2>
+          <img src={logo} alt="Yappy logo" />
+          <h2>Yappy</h2>
         </div>
 
         <p

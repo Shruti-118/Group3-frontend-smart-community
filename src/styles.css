@@ -459,13 +459,6 @@
     overflow-x: auto;
   }
 }
-/* ---- user dashboard styles ----
-   Delete the OLD "ud-" block in styles.css and paste this whole file instead.
-   Every class starts with "ud-" so it cannot clash with other pages.
-   Colours come from the variables in the first two blocks, so the dark
-   theme only needs those values changed. */
-
-/* ---------- colours: LIGHT theme (default) ---------- */
 .ud-page {
   --ud-bg: #f4f5fb;
   --ud-card: #ffffff;

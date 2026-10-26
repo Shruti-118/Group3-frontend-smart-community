@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "./assets/nexora-logo.png";
+import logo from "./assets/yappy-logo.png";
 import { API_URL } from "./api";
 import { GoogleLogin } from "@react-oauth/google";
 import "./styles.css";
@@ -187,7 +187,7 @@ async function handleGoogleSuccess(credentialResponse) {
       return;
     }
 
-    // Save Nexora's access token returned by YOUR backend.
+    // Save Yappy's access token returned by YOUR backend.
     if (!data.accessToken) {
       setPasswordError(
         "Google login failed: backend access token was not received."
@@ -253,8 +253,8 @@ function handleGoogleError() {
     <div className="login-page">
       <form className="login-box" onSubmit={handleLogin}>
         <div className="brand">
-          <img src={logo} alt="Nexora logo" className="brand-logo" />
-          <h1>Nexora</h1>
+          <img src={logo} alt="Yappy logo" className="brand-logo" />
+          <h1>Yappy</h1>
         </div>
         <h2>Welcome back !</h2>
         <p className="small-text">Log in to your account to continue</p>

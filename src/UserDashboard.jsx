@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/nexora-logo.png";
+import logo from "./assets/yappy-logo.png";
 import { API_URL } from "./api";
 
 // ---------------- small helpers ----------------
@@ -554,8 +554,8 @@ function UserDashboard() {
       {/* ================= LEFT SIDEBAR ================= */}
       <div className="ud-sidebar">
         <div className="ud-brand">
-          <img src={logo} alt="Nexora logo" />
-          <h2>Nexora</h2>
+          <img src={logo} alt="Yappy logo" />
+          <h2>Yappy</h2>
         </div>
 
         {menuList.map((item) => (
@@ -895,7 +895,7 @@ function UserDashboard() {
               <span className="ud-bubble ud-bubble-1">💬</span>
               <span className="ud-bubble ud-bubble-2">👥</span>
               <span className="ud-bubble ud-bubble-3">✨</span>
-              <p>Find your people on Nexora</p>
+              <p>Find your people on Yappy</p>
             </div>
           </div>
         </div>
