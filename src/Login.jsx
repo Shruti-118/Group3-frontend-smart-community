@@ -152,17 +152,102 @@ function Login() {
   }
 }
 // GOOGLE LOGIN
-function handleGoogleLogin() {
-  // Redirect the user to the backend.
-  // Spring Security will handle Google authentication.
-  window.location.href =
-    "https://smartcommunity-2jf8.onrender.com/oauth2/authorization/google";
+async function handleGoogleSuccess(credentialResponse) {
+  try {
+    // Google returns an ID token in credential.
+    const googleToken = credentialResponse.credential;
+
+    if (!googleToken) {
+      setPasswordError("Google login failed. Please try again.");
+      return;
+    }
+    const response = await fetch("https://smartcommunity-2jf8.onrender.com/oauth2/authorization/google", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        credential: googleToken,
+      }),
+    });
+
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch (err) {
+      data = {};
+    }
+
+    // Handle backend errors.
+    if (!response.ok) {
+      setPasswordError(
+        data.message || "Google login failed. Please try again."
+      );
+      return;
+    }
+
+    // Save Nexora's access token returned by YOUR backend.
+    if (!data.accessToken) {
+      setPasswordError(
+        "Google login failed: backend access token was not received."
+      );
+      return;
+    }
+
+    localStorage.setItem("token", data.accessToken);
+
+    // Save refresh token only if your backend provides one.
+    if (data.refreshToken) {
+      localStorage.setItem("refreshToken", data.refreshToken);
+    }
+
+    // Get user details returned by YOUR backend.
+    const loggedInUser = data.user || {};
+
+    const userEmail = loggedInUser.email || "";
+
+    const userName =
+      loggedInUser.name ||
+      userEmail.split("@")[0] ||
+      "User";
+
+    // Save user information.
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        ...loggedInUser,
+        name: userName,
+        email: userEmail,
+      })
+    );
+
+    // Use the role returned by your backend, if available.
+    const role = loggedInUser.role || data.role || "user";
+
+    localStorage.setItem("role", role);
+    localStorage.setItem("isLoggedIn", "true");
+
+    // Clear errors.
+    setEmailError("");
+    setPasswordError("");
+
+    // Redirect after successful login.
+    if (role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/home");
+    }
+  } catch (err) {
+    setPasswordError(
+      "Cannot connect to the server. Please try again."
+    );
+  }
 }
-// GOOGLE LOGIN ERROR
+
+// Called if Google sign-in fails or is cancelled.
 function handleGoogleError() {
-  setPasswordError(
-    "Google sign-in was unsuccessful. Please try again."
-  );
+  setPasswordError("Google sign-in was unsuccessful. Please try again.");
 }
   return (
     <div className="login-page">
@@ -214,16 +299,17 @@ function handleGoogleError() {
         </div>
 
         {/* Login through Google */}
-        <button type="button"
-          onClick={handleGoogleLogin}
-          className="google-login-button">
-          <img
-            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-            alt="Google"
-            width="20"
-            height="20"
-          />Continue with Google
-        </button>
+        <div className="google-login">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            text="continue_with"
+            shape="rectangular"
+            theme="outline"
+            size="large"
+            width="320"
+          />
+        </div>
 
         <button
           type="button"
