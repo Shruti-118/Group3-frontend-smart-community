@@ -154,56 +154,26 @@ function Login() {
 // GOOGLE LOGIN
 async function handleGoogleSuccess(credentialResponse) {
   try {
-    // Google returns an ID token in credential.
     const googleToken = credentialResponse.credential;
 
     if (!googleToken) {
       setPasswordError("Google login failed. Please try again.");
       return;
     }
+    const response = await fetch(API_URL + "/api/auth/google",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential: googleToken,
+        }),
+      }
+    );
 
-    /*
-    ==========================================
-    BACKEND INTEGRATION — GOOGLE LOGIN
-    ==========================================
+    const data = await response.json().catch(() => ({}));
 
-    Once your backend API is ready, send googleToken
-    to your backend for verification.
-
-    Suggested backend endpoint:
-    POST /api/auth/google
-
-    Suggested request body:
-    {
-      "credential": googleToken
-    }
-
-    The backend must verify this token with Google.
-    Do not trust the token or user details just because
-    they came from the frontend.
-    */
-
-    // Send the Google token to your backend.
-    // Replace this endpoint if your backend uses a different route.
-    const response = await fetch("https://smartcommunity-2jf8.onrender.com/oauth2/authorization/google", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        credential: googleToken,
-      }),
-    });
-
-    let data = {};
-
-    try {
-      data = await response.json();
-    } catch (err) {
-      data = {};
-    }
-
-    // Handle backend errors.
     if (!response.ok) {
       setPasswordError(
         data.message || "Google login failed. Please try again."
@@ -211,32 +181,25 @@ async function handleGoogleSuccess(credentialResponse) {
       return;
     }
 
-    // Save Nexora's access token returned by YOUR backend.
-    if (!data.accessToken) {
+    if (!data.accessToken || !data.user) {
       setPasswordError(
-        "Google login failed: backend access token was not received."
+        "Google login failed: required user or access token was not received."
       );
       return;
     }
 
+    // Save the backend's access token.
     localStorage.setItem("token", data.accessToken);
-
-    // Save refresh token only if your backend provides one.
     if (data.refreshToken) {
       localStorage.setItem("refreshToken", data.refreshToken);
     }
-
-    // Get user details returned by YOUR backend.
-    const loggedInUser = data.user || {};
-
+    const loggedInUser = data.user;
     const userEmail = loggedInUser.email || "";
-
     const userName =
       loggedInUser.name ||
       userEmail.split("@")[0] ||
       "User";
 
-    // Save user information.
     localStorage.setItem(
       "user",
       JSON.stringify({
@@ -246,32 +209,27 @@ async function handleGoogleSuccess(credentialResponse) {
       })
     );
 
-    // Use the role returned by your backend, if available.
     const role = loggedInUser.role || data.role || "user";
 
     localStorage.setItem("role", role);
     localStorage.setItem("isLoggedIn", "true");
 
-    // Clear errors.
     setEmailError("");
     setPasswordError("");
 
-    // Redirect after successful login.
-    if (role === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/home");
-    }
+    navigate(role === "admin" ? "/admin" : "/home");
   } catch (err) {
+    console.error("Google login error:", err);
+
     setPasswordError(
       "Cannot connect to the server. Please try again."
     );
   }
 }
-
-// Called if Google sign-in fails or is cancelled.
 function handleGoogleError() {
-  setPasswordError("Google sign-in was unsuccessful. Please try again.");
+  setPasswordError(
+    "Google sign-in was unsuccessful. Please try again."
+  );
 }
   return (
     <div className="login-page">
