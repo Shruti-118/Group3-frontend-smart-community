@@ -152,80 +152,13 @@ function Login() {
   }
 }
 // GOOGLE LOGIN
-async function handleGoogleSuccess(credentialResponse) {
-  try {
-    const googleToken = credentialResponse.credential;
-
-    if (!googleToken) {
-      setPasswordError("Google login failed. Please try again.");
-      return;
-    }
-    const response = await fetch(API_URL + "/api/auth/google",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          credential: googleToken,
-        }),
-      }
-    );
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      setPasswordError(
-        data.message || "Google login failed. Please try again."
-      );
-      return;
-    }
-
-    if (!data.accessToken || !data.user) {
-      setPasswordError(
-        "Google login failed: required user or access token was not received."
-      );
-      return;
-    }
-
-    // Save the backend's access token.
-    localStorage.setItem("token", data.accessToken);
-    if (data.refreshToken) {
-      localStorage.setItem("refreshToken", data.refreshToken);
-    }
-    const loggedInUser = data.user;
-    const userEmail = loggedInUser.email || "";
-    const userName =
-      loggedInUser.name ||
-      userEmail.split("@")[0] ||
-      "User";
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...loggedInUser,
-        name: userName,
-        email: userEmail,
-      })
-    );
-
-    const role = loggedInUser.role || data.role || "user";
-
-    localStorage.setItem("role", role);
-    localStorage.setItem("isLoggedIn", "true");
-
-    setEmailError("");
-    setPasswordError("");
-
-    navigate(role === "admin" ? "/admin" : "/home");
-  } catch (err) {
-    console.error("Google login error:", err);
-
-    setPasswordError(
-      "Cannot connect to the server. Please try again."
-    );
-  }
+function handleGoogleLogin() {
+  // Redirect the user to the backend.
+  // Spring Security will handle Google authentication.
+  window.location.href =
+    "https://smartcommunity-2jf8.onrender.com/oauth2/authorization/google";
 }
+// GOOGLE LOGIN ERROR
 function handleGoogleError() {
   setPasswordError(
     "Google sign-in was unsuccessful. Please try again."
@@ -281,17 +214,16 @@ function handleGoogleError() {
         </div>
 
         {/* Login through Google */}
-        <div className="google-login">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            text="continue_with"
-            shape="rectangular"
-            theme="outline"
-            size="large"
-            width="320"
-          />
-        </div>
+        <button type="button"
+          onClick={handleGoogleLogin}
+          className="google-login-button">
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google"
+            width="20"
+            height="20"
+          />Continue with Google
+        </button>
 
         <button
           type="button"
