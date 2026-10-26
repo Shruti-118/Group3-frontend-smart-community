@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "./assets/yappy-logo.png";
+import logo from "./assets/yappy-logo.jpeg";
 import { API_URL } from "./api";
 import { GoogleLogin } from "@react-oauth/google";
 import "./styles.css";

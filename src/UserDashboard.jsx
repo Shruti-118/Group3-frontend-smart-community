@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/yappy-logo.png";
+import logo from "./assets/yappy-logo.jpeg";
 import { API_URL } from "./api";
 
 // ---------------- small helpers ----------------
