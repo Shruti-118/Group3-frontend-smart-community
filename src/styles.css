@@ -479,6 +479,8 @@
     font-size: 25px;
   }
 }
+
+
 /* ---- add this at the bottom of styles.css ---- */
 .reset-title {
   display: flex;
@@ -508,6 +510,10 @@
   font-size: 12px;
   color: #b36b00;
 }
+
+
+
+/* admin page */
 .ad-page {
   display: flex;
   min-height: 100vh;
@@ -1713,10 +1719,192 @@
   height: 1px;
   background-color: #ddd;
 }
-/* Google login button container */
-.google-login {
+
+
+/* verify email */
+.login-page {
+  min-height: 100vh;
   display: flex;
+  align-items: center;
   justify-content: center;
+  padding: 20px;
+  background: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+/* Verification card */
+.login-box {
   width: 100%;
-  margin-bottom: 18px;
+  max-width: 420px;
+  padding: 35px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Logo and brand */
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #222222;
+}
+
+/* Heading */
+.reset-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  color: #222222;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.reset-title span {
+  font-size: 25px;
+}
+
+/* Instructions */
+.small-text {
+  margin: 12px 0 20px;
+  color: #666666;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* OTP label */
+.login-box label {
+  display: block;
+  margin-bottom: 10px;
+  color: #333333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* OTP input */
+.otp-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 12px;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #222222;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 10px;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.otp-input:focus {
+  border-color: #333333;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.otp-input:disabled {
+  background: #f3f3f3;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Error message */
+.error {
+  margin: 8px 0 12px;
+  color: #d93025;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Success message */
+.success {
+  margin: 15px 0;
+  color: #188038;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Main button */
+.login-btn {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #222222;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.login-btn:hover {
+  background: #444444;
+}
+
+.login-btn:active {
+  transform: scale(0.98);
+}
+
+/* Bottom text */
+.bottom-text {
+  margin: 24px 0 0;
+  color: #666666;
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Clickable text */
+.terms-link {
+  color: #222222;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.terms-link:hover {
+  color: #555555;
+}
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 25px 20px;
+  }
+  .brand h1 {
+    font-size: 24px;
+  }
+  .reset-title {
+    font-size: 21px;
+  }
+  .otp-input {
+    font-size: 21px;
+    letter-spacing: 7px;
+  }
 }
