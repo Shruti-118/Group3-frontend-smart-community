@@ -44,14 +44,14 @@ export default function UserDashboard() {
     <div className={`sc-dashboard ${darkMode ? "sc-dashboard--dark" : ""}`}>
       <aside className="sc-sidebar">
         <button className="sc-brand" onClick={() => go("Home", "/home")} aria-label="Smart Community home">
-          <span className="sc-brand-mark"><img src={logo} alt="Yappy logo" className="brand-logo" /></span>
-          <span className="yappy-text">Yappy</span>
+          <span className="sc-brand-mark"><img src={logo} alt="Yappy logo" className="sc-brand-logo" /></span>
+          <span className="sc-yappy-text">Yappy</span>
         </button>
 
         <nav className="sc-nav" aria-label="Main navigation">
           <button className={active === "Home" ? "active" : ""} onClick={() => go("Home", "/home")}><span>⌂</span>Home</button>
           <button className={active === "Servers" ? "active" : ""} onClick={() => go("Servers", "/servers")}><span>♧</span>Servers</button>
-          <button className={active === "Messages" ? "active" : ""} onClick={() => go("Messages", "/chat")}><span>▢</span>Messages</button>
+          <button className={active === "Messages" ? "active" : ""} onClick={() => go("Messages", "/chat")}><span>✉︎</span>Messages</button>
           <button className={active === "Explore" ? "active" : ""} onClick={() => go("Explore", "/explore")}><span>⌕</span>Explore</button>
         </nav>
 
@@ -95,7 +95,7 @@ export default function UserDashboard() {
           <section className="sc-hero">
             <div className="sc-hero-copy">
               <p className="sc-eyebrow">YOUR PEOPLE. YOUR COMMUNITY.</p>
-              <h1>Welcome to<br />Smart Community</h1>
+              <h1>Welcome to<br />YAPPY</h1>
               <p className="sc-hero-description">Connect, chat, and build something great together. Create your own community or join one today!</p>
               <div className="sc-hero-actions">
                 <button className="sc-btn sc-btn-primary" onClick={() => go("Servers", "/servers")}>Get Started <span>→</span></button>
