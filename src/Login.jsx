@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "./assets/yappy-logo.jpeg";
 import "./styles.css";
+import logo from "./assets/yappy-logo.jpeg";
+import { API_URL } from "./api";
 
 function Login() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Validate email
   function checkEmail() {
@@ -39,8 +41,8 @@ function Login() {
       return "Password is required";
     }
 
-    if (password.length < 8) {
-      return "Password must be at least 8 characters";
+    if (password.length < 6) {
+      return "Password must be at least 6 characters";
     }
 
     if (!/[a-z]/.test(password)) {
@@ -62,8 +64,8 @@ function Login() {
     return "";
   }
 
-  // Login without connecting to the backend
-  function handleLogin(e) {
+  // Login using the backend API
+  async function handleLogin(e) {
     e.preventDefault();
 
     const emailMsg = checkEmail();
@@ -72,113 +74,194 @@ function Login() {
     setEmailError(emailMsg);
     setPasswordError(passwordMsg);
 
-    // Stop if validation fails
-    if (emailMsg !== "" || passwordMsg !== "") {
+    if (emailMsg || passwordMsg) {
       return;
     }
 
-    const userEmail = email.trim();
-
-    // Get previously saved user details, if available
-    let oldUser = null;
+    setLoading(true);
 
     try {
-      oldUser = JSON.parse(localStorage.getItem("user") || "null");
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password,
+        }),
+      });
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      // Handle unsuccessful login
+      if (!response.ok) {
+        setPasswordError(
+          data.message ||
+            data.detail ||
+            "Login failed. Please check your email and password."
+        );
+        return;
+      }
+
+      // Read the access token from the response
+      const accessToken = data.accessToken;
+
+      if (!accessToken) {
+        setPasswordError(
+          "Login failed: the server did not return an access token."
+        );
+        return;
+      }
+
+      // Read user details and role
+      const loggedInUser = data.user || {};
+
+      // If the backend doesn't return a role, default to "user"
+      const role = String(
+        loggedInUser.role || data.role || "user"
+      ).toLowerCase();
+
+      // Save the token for authenticated API requests
+      // "token" supports components that already use this key.
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem("accessToken", accessToken);
+
+      // Save refresh token only if the backend provides one
+      if (data.refreshToken) {
+        localStorage.setItem("refreshToken", data.refreshToken);
+      }
+
+      // Save user information
+      const userEmail = loggedInUser.email || email.trim();
+      const userName =
+        loggedInUser.name || userEmail.split("@")[0];
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...loggedInUser,
+          name: userName,
+          email: userEmail,
+          role: role,
+        })
+      );
+
+      localStorage.setItem("role", role);
+      localStorage.setItem("isLoggedIn", "true");
+
+      setEmailError("");
+      setPasswordError("");
+
+      // Navigate based on the role returned by the backend
+      if (role === "admin") {
+        navigate("/admindashboard", { replace: true });
+      } else {
+        navigate("/userdashboard", { replace: true });
+      }
     } catch (error) {
-      oldUser = null;
+      console.error("Login API error:", error);
+
+      setPasswordError(
+        "Cannot connect to the server. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-
-    // Use the previous name for this email, or create a name from the email
-    const userName =
-      oldUser && oldUser.email === userEmail && oldUser.name
-        ? oldUser.name
-        : userEmail.split("@")[0];
-
-    // Save basic user information locally
-    const loggedInUser = {
-      ...(oldUser && oldUser.email === userEmail ? oldUser : {}),
-      name: userName,
-      email: userEmail,
-    };
-
-    localStorage.setItem("user", JSON.stringify(loggedInUser));
-    localStorage.setItem("role", "user");
-    localStorage.setItem("isLoggedIn", "true");
-
-    // Clear validation errors
-    setEmailError("");
-    setPasswordError("");
-
-    // Navigate to the home page
-    navigate("/home");
   }
 
   return (
-    <div className="login-page">
-      <form className="login-box" onSubmit={handleLogin}>
-        <div className="brand">
-          <img src={logo} alt="Yappy logo" className="brand-logo" />
+    <div className="yappy-login-page">
+      <form className="yappy-login-box" onSubmit={handleLogin}>
+        <div className="yappy-brand">
+          <img
+            src={logo}
+            alt="Yappy logo"
+            className="yappy-brand-logo"
+          />
           <h1>Yappy</h1>
         </div>
 
         <h2>Welcome back !</h2>
 
-        <p className="small-text">
+        <p className="yappy-small-text">
           Log in to your account to continue
         </p>
 
-        <label>Email address</label>
+        <label htmlFor="login-email">Email address</label>
 
         <input
+          id="login-email"
           type="text"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
+          aria-invalid={Boolean(emailError)}
         />
 
-        <p className="error">{emailError}</p>
+        {emailError && (
+          <p className="yappy-error">{emailError}</p>
+        )}
 
-        <label>Password</label>
+        <label htmlFor="login-password">Password</label>
 
-        <div className="password-row">
+        <div className="yappy-password-row">
           <input
+            id="login-password"
             type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            aria-invalid={Boolean(passwordError)}
           />
 
-          <span
-            className="eye"
-            onClick={() => setShowPassword(!showPassword)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                setShowPassword(!showPassword);
-              }
-            }}
+          <button
+            type="button"
+            className="yappy-eye"
+            onClick={() => setShowPassword((previous) => !previous)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? "🔒" : "🔓"}
-          </span>
+          </button>
         </div>
 
-        <p className="error">{passwordError}</p>
+        {passwordError && (
+          <p className="yappy-error">{passwordError}</p>
+        )}
 
         <p
-          className="forgot"
+          className="yappy-forgot"
           onClick={() => navigate("/forgot-password")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              navigate("/forgot-password");
+            }
+          }}
         >
           Forgot password?
         </p>
 
-        <button type="submit" className="login-btn">
-          Login
+        <button
+          type="submit"
+          className="yappy-login-btn"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <button
           type="button"
-          className="create-btn"
+          className="yappy-create-btn"
           onClick={() => navigate("/create-account")}
         >
           Create account
