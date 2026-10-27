@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UserDashboard.css";
-import logo from "./assets/yappy-logo.png";
+import logo from "./assets/yappy-logo.jpeg";
 
 /*
  * BACKGROUND IMAGE AREA:
