@@ -1721,190 +1721,220 @@
 }
 
 
-/* verify email */
+
+/* ===== VERIFY EMAIL PAGE ===== */
+
 .verify-email-page {
   min-height: 100vh;
+  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: #f5f5f5;
-  font-family: Arial, sans-serif;
+  align-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background-color: #e8f4f0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000000;
 }
 
-/* Verification card */
+/* Main white card */
+
 .verify-email-box {
   width: 100%;
-  max-width: 420px;
-  padding: 35px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  max-width: 440px;
+  padding: 32px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 14px;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
 }
 
-/* Logo and brand */
+/* Logo and brand name */
+
 .verify-brand {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 30px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
 }
 
 .verify-brand-logo {
-  width: 48px;
-  height: 48px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
   border-radius: 50%;
 }
 
 .verify-brand h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
-  color: #222222;
+  color: #000000;
 }
 
-/* Heading */
+/* Verification heading */
+
 .verify-reset-title {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
-  margin: 0 0 18px;
-  color: #222222;
-  font-size: 24px;
+  margin: 0 0 12px;
+  font-size: 25px;
   font-weight: 700;
-  text-align: center;
+  color: #000000;
 }
 
 .verify-reset-title span {
-  font-size: 25px;
+  font-size: 23px;
 }
 
-/* Instructions */
+/* Instruction text */
+
 .verify-small-text {
-  margin: 12px 0 20px;
-  color: #666666;
+  margin: 8px 0 22px;
   font-size: 14px;
   line-height: 1.6;
-  text-align: center;
+  color: #333333;
   overflow-wrap: anywhere;
 }
 
 /* OTP label */
+
 .verify-email-box label {
   display: block;
-  margin-bottom: 10px;
-  color: #333333;
+  margin-bottom: 8px;
   font-size: 14px;
   font-weight: 600;
+  color: #000000;
 }
 
 /* OTP input */
+
 .verify-otp-input {
   display: block;
   width: 100%;
+  height: 48px;
+  padding: 12px;
   box-sizing: border-box;
-  padding: 14px 12px;
-  border: 1px solid #d6d6d6;
-  border-radius: 8px;
+  border: 1px solid #000000;
+  border-radius: 6px;
   outline: none;
-  background: #ffffff;
-  color: #222222;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: 10px;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  letter-spacing: 8px;
   text-align: center;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.verify-otp-input::placeholder {
+  color: #777777;
+  opacity: 1;
+}
+
 .verify-otp-input:focus {
-  border-color: #333333;
+  border: 2px solid #000000;
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
 }
 
 .verify-otp-input:disabled {
-  background: #f3f3f3;
+  background-color: #f2f2f2;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
 /* Error message */
+
 .verify-error {
-  margin: 8px 0 12px;
-  color: #d93025;
+  margin: 12px 0;
+  color: #b00020;
   font-size: 13px;
   line-height: 1.5;
-  text-align: center;
 }
 
 /* Success message */
+
 .verify-success {
-  margin: 15px 0;
-  color: #188038;
-  font-size: 15px;
+  margin: 16px 0;
+  color: #000000;
+  font-size: 16px;
   font-weight: 600;
-  text-align: center;
-}
-
-/* Main button */
-.verify-btn {
-  display: block;
-  width: 100%;
-  margin-top: 20px;
-  padding: 14px 18px;
-  border: none;
-  border-radius: 8px;
-  background: #222222;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.verify-btn:hover {
-  background: #444444;
-}
-
-.verify-btn:active {
-  transform: scale(0.98);
 }
 
 /* Bottom text */
+
 .verify-bottom-text {
   margin: 24px 0 0;
-  color: #666666;
   font-size: 13px;
-  text-align: center;
-  line-height: 1.6;
+  line-height: 1.7;
+  color: #333333;
 }
 
-/* Clickable text */
+/* Create account link */
+
 .verify-terms-link {
-  color: #222222;
-  font-weight: 600;
+  color: #000000;
+  font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
 }
 
 .verify-terms-link:hover {
-  color: #555555;
+  color: #444444;
 }
+
+/* Buttons */
+
+.verify-btn {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 18px;
+  padding: 12px 16px;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.verify-btn:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.verify-btn:focus-visible,
+.verify-terms-link:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 3px;
+}
+
 /* Mobile responsiveness */
+
 @media (max-width: 480px) {
+  .verify-email-page {
+    padding: 16px;
+  }
+
   .verify-email-box {
-    padding: 25px 20px;
+    padding: 24px 20px;
   }
+
   .verify-brand h1 {
-    font-size: 24px;
+    font-size: 28px;
   }
+
   .verify-reset-title {
-    font-size: 21px;
+    font-size: 22px;
   }
+
   .verify-otp-input {
-    font-size: 21px;
-    letter-spacing: 7px;
+    letter-spacing: 6px;
   }
 }
