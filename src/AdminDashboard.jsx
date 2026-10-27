@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/yappy-logo.png";
+import logo from "./assets/yappy-Logo.png";
 
 function AdminDashboard() {
   const navigate = useNavigate();
