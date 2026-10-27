@@ -163,7 +163,7 @@ function Login() {
       if (role === "admin") {
         navigate("/admindashboard", { replace: true });
       } else {
-        navigate("/userdashboard", { replace: true });
+        navigate("/home", { replace: true });
       }
     } catch (error) {
       console.error("Login API error:", error);
