@@ -84,25 +84,25 @@ function VerifyEmail() {
   }
 
   return (
-    <div className="login-page">
-      <div className="login-box">
-        <div className="brand">
-          <img src={logo} alt="Yappy logo" className="brand-logo" />
+    <div className="verify-email-page">
+      <div className="verify-email-box">
+        <div className="verify-brand">
+          <img src={logo} alt="Yappy logo" className="verify-brand-logo" />
           <h1>Yappy</h1>
         </div>
 
         {/* no email found */}
         {email === "" && (
           <div>
-            <h2 className="reset-title">
+            <h2 className="verify-reset-title">
               <span>✉️</span> Verify email
             </h2>
-            <p className="error">
+            <p className="verify-error">
               No email found. Please create an account first.
             </p>
             <button
               type="button"
-              className="login-btn"
+              className="verify-btn"
               onClick={() => navigate("/create-account")}
             >
               Create account
@@ -113,17 +113,17 @@ function VerifyEmail() {
         {/* enter otp */}
         {email !== "" && !verified && (
           <div>
-            <h2 className="reset-title">
+            <h2 className="verify-reset-title">
               <span>✉️</span> Verify email
             </h2>
-            <p className="small-text">
+            <p className="verify-small-text">
               We have sent an OTP to {email}, fill it here for verification
             </p>
 
             <label>Enter OTP</label>
             <input
               type="text"
-              className="otp-input"
+              className="verify-otp-input"
               placeholder="------"
               value={otp}
               onChange={handleOtpChange}
@@ -132,19 +132,19 @@ function VerifyEmail() {
               disabled={isVerifying}
             />
             {isVerifying && (
-              <p className="small-text">
+              <p className="verify-small-text">
                 Verifying your OTP...
               </p>
             )}
-            <p className="error">{otpError}</p>
+            <p className="verify-error">{otpError}</p>
 
             {/* TODO (backend): a "Resend email" button can be added here when
                 the backend gives an api for sending a new otp */}
 
-            <p className="bottom-text">
+            <p className="verify-bottom-text">
               Wrong email?{" "}
               <span
-                className="terms-link"
+                className="verify-terms-link"
                 onClick={() => navigate("/create-account")}
               >
                 Create account again
@@ -156,14 +156,14 @@ function VerifyEmail() {
         {/* verified */}
         {email !== "" && verified && (
           <div>
-            <h2 className="reset-title">
+            <h2 className="verify-reset-title">
               <span>✅</span> All done
             </h2>
-            <p className="success">✔ Email verified</p>
-            <p className="small-text">Your account is ready. Please log in.</p>
+            <p className="verify-success">✔ Email verified</p>
+            <p className="verify-small-text">Your account is ready. Please log in.</p>
             <button
               type="button"
-              className="login-btn"
+              className="verify-btn"
               onClick={() => navigate("/")}
             >
               Go to login

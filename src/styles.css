@@ -1722,7 +1722,7 @@
 
 
 /* verify email */
-.login-page {
+.verify-email-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -1733,7 +1733,7 @@
 }
 
 /* Verification card */
-.login-box {
+.verify-email-box {
   width: 100%;
   max-width: 420px;
   padding: 35px;
@@ -1743,7 +1743,7 @@
 }
 
 /* Logo and brand */
-.brand {
+.verify-brand {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1751,14 +1751,14 @@
   margin-bottom: 30px;
 }
 
-.brand-logo {
+.verify-brand-logo {
   width: 48px;
   height: 48px;
   object-fit: contain;
   border-radius: 50%;
 }
 
-.brand h1 {
+.verify-brand h1 {
   margin: 0;
   font-size: 28px;
   font-weight: 700;
@@ -1766,7 +1766,7 @@
 }
 
 /* Heading */
-.reset-title {
+.verify-reset-title {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1778,12 +1778,12 @@
   text-align: center;
 }
 
-.reset-title span {
+.verify-reset-title span {
   font-size: 25px;
 }
 
 /* Instructions */
-.small-text {
+.verify-small-text {
   margin: 12px 0 20px;
   color: #666666;
   font-size: 14px;
@@ -1793,7 +1793,7 @@
 }
 
 /* OTP label */
-.login-box label {
+.verify-email-box label {
   display: block;
   margin-bottom: 10px;
   color: #333333;
@@ -1802,7 +1802,7 @@
 }
 
 /* OTP input */
-.otp-input {
+.verify-otp-input {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -1819,19 +1819,19 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.otp-input:focus {
+.verify-otp-input:focus {
   border-color: #333333;
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
 }
 
-.otp-input:disabled {
+.verify-otp-input:disabled {
   background: #f3f3f3;
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 /* Error message */
-.error {
+.verify-error {
   margin: 8px 0 12px;
   color: #d93025;
   font-size: 13px;
@@ -1840,7 +1840,7 @@
 }
 
 /* Success message */
-.success {
+.verify-success {
   margin: 15px 0;
   color: #188038;
   font-size: 15px;
@@ -1849,7 +1849,7 @@
 }
 
 /* Main button */
-.login-btn {
+.verify-btn {
   display: block;
   width: 100%;
   margin-top: 20px;
@@ -1864,16 +1864,16 @@
   transition: background 0.2s, transform 0.2s;
 }
 
-.login-btn:hover {
+.verify-btn:hover {
   background: #444444;
 }
 
-.login-btn:active {
+.verify-btn:active {
   transform: scale(0.98);
 }
 
 /* Bottom text */
-.bottom-text {
+.verify-bottom-text {
   margin: 24px 0 0;
   color: #666666;
   font-size: 13px;
@@ -1882,28 +1882,28 @@
 }
 
 /* Clickable text */
-.terms-link {
+.verify-terms-link {
   color: #222222;
   font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
 }
 
-.terms-link:hover {
+.verify-terms-link:hover {
   color: #555555;
 }
 /* Mobile responsiveness */
 @media (max-width: 480px) {
-  .login-box {
+  .verify-email-box {
     padding: 25px 20px;
   }
-  .brand h1 {
+  .verify-brand h1 {
     font-size: 24px;
   }
-  .reset-title {
+  .verify-reset-title {
     font-size: 21px;
   }
-  .otp-input {
+  .verify-otp-input {
     font-size: 21px;
     letter-spacing: 7px;
   }
