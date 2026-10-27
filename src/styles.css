@@ -190,116 +190,294 @@
 
 
 /* next ui create account*/
-.terms-row {
+.create-account-page {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #7f8b87;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 15px;
+  font-family: Arial, sans-serif;
+}
+
+/* Signup card */
+.create-account-page .create-account-box {
+  width: 100%;
+  max-width: 490px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  padding: 35px;
+  border-radius: 15px;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Logo and brand name */
+.create-account-page .brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.create-account-page .brand-logo {
+  width: 55px;
+  height: 45px;
+  object-fit: contain;
+}
+
+.create-account-page .brand h1 {
+  margin: 0;
+  color: #000000;
+  font-size: 38px;
+  font-weight: 700;
+}
+
+/* Heading */
+.create-account-page h2 {
+  margin: 12px 0 5px;
+  color: #000000;
+  font-size: 29px;
+  font-weight: 700;
+}
+
+/* Subtitle */
+.create-account-page .small-text {
+  margin: 0 0 25px;
+  color: #777777;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Labels */
+.create-account-page > .create-account-box > label {
+  display: block;
+  margin: 17px 0 8px;
+  color: #000000;
+  font-size: 16px;
+}
+
+/* Text inputs */
+.create-account-page .create-account-box > input {
+  display: block;
+  width: 100%;
+  height: 47px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #c5c5c5;
+  border-radius: 7px;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 16px;
+  outline: none;
+}
+
+.create-account-page .create-account-box > input:focus {
+  border-color: #555555;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
+}
+
+.create-account-page .create-account-box input::placeholder {
+  color: #777777;
+}
+
+/* Password input row */
+.create-account-page .password-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  width: 100%;
+  height: 47px;
+  box-sizing: border-box;
+  border: 1px solid #c5c5c5;
+  border-radius: 7px;
+  background-color: #ffffff;
+  overflow: hidden;
 }
-.terms-row input {
-  width: auto;
-  margin: 0;
+
+.create-account-page .password-row:focus-within {
+  border-color: #555555;
 }
-.terms-row label {
-  margin: 0;
+
+.create-account-page .password-row input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #000000;
+  font-size: 16px;
 }
-.terms-link {
+
+/* Show/hide password button */
+.create-account-page .eye {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Validation errors */
+.create-account-page .error {
+  margin: 5px 0 0;
+  color: #ff3333;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Terms and conditions row */
+.create-account-page .terms-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 22px 0 5px;
+}
+
+.create-account-page .terms-row input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 3px 0 0;
+  cursor: pointer;
+}
+
+.create-account-page .terms-row label {
+  color: #000000;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Clickable links */
+.create-account-page .terms-link {
   color: #000000;
   text-decoration: underline;
   cursor: pointer;
 }
-.bottom-text {
-  margin: 5px 0 0;
-  text-align: center;
-  font-size: 13px;
-  color: gray;
+
+.create-account-page .terms-link:hover {
+  color: #555555;
 }
-/* terms and conditions popup */
-.popup-background {
-  position: fixed;
-  top: 0;
-  left: 0;
+
+/* Signup button */
+.create-account-page .login-btn {
+  display: block;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  min-height: 48px;
+  box-sizing: border-box;
+  margin-top: 22px;
+  padding: 12px;
+  border: 1px solid #000000;
+  border-radius: 7px;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.create-account-page .login-btn:hover {
+  background-color: #292929;
+}
+
+.create-account-page .login-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Login link at the bottom */
+.create-account-page .bottom-text {
+  margin: 18px 0 0;
+  color: #777777;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Terms popup background */
+.create-account-page .popup-background {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  box-sizing: border-box;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.55);
 }
-.popup-box {
-  width: 400px;
-  max-width: 90%;
-  max-height: 80vh;
+
+/* Terms popup card */
+.create-account-page .popup-box {
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  box-sizing: border-box;
   overflow-y: auto;
   padding: 25px;
-  background-color: white;
   border-radius: 12px;
-}
-.popup-box h2 {
-  margin-top: 0;
-  text-align: center;
+  background-color: #ffffff;
   color: #000000;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
-.popup-box p {
+
+.create-account-page .popup-box h2 {
+  margin: 0 0 18px;
+  font-size: 24px;
+}
+
+.create-account-page .popup-box p {
   font-size: 14px;
-  margin: 8px 0;
+  line-height: 1.6;
 }
-/* ---- add this at the bottom of styles.css ---- */
-.terms-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-}
-.terms-row input {
-  width: auto;
-  margin: 0;
-}
-.terms-row label {
-  margin: 0;
-}
-.terms-link {
+
+/* Secondary button inside popup */
+.create-account-page .create-btn {
+  display: block;
+  width: 100%;
+  min-height: 45px;
+  box-sizing: border-box;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #000000;
+  border-radius: 7px;
+  background-color: #ffffff;
   color: #000000;
-  text-decoration: underline;
+  font-size: 16px;
   cursor: pointer;
 }
-.bottom-text {
-  margin: 5px 0 0;
-  text-align: center;
-  font-size: 13px;
-  color: gray;
+
+.create-account-page .create-btn:hover {
+  background-color: #f2f2f2;
 }
-/* terms and conditions popup */
-.popup-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-.popup-box {
-  width: 400px;
-  max-width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 25px;
-  background-color: white;
-  border-radius: 12px;
-}
-.popup-box h2 {
-  margin-top: 0;
-  text-align: center;
-  color: #000000;
-}
-.popup-box p {
-  font-size: 14px;
-  margin: 8px 0;
+@media (max-width: 600px) {
+  .create-account-page {
+    align-items: flex-start;
+    padding: 20px 12px;
+  }
+
+  .create-account-page .create-account-box {
+    padding: 25px 20px;
+  }
+
+  .create-account-page .brand h1 {
+    font-size: 32px;
+  }
+
+  .create-account-page h2 {
+    font-size: 25px;
+  }
 }
 /* ---- add this at the bottom of styles.css ---- */
 .reset-title {
