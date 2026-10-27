@@ -116,7 +116,7 @@
   margin: 6px 0 12px;
   color: #d93025;
   font-size: 13px;
-  line-height: 1.4;
+  /* line-height: 1.4; */
 }
 /* Forgot password */
 .yappy-forgot {
