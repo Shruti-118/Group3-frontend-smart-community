@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UserDashboard.css";
-import logo from "./assets/yappy-logo.png";
+// import logo from "./assets/yappy-logo.png";
 import communityHero from "./assets/community-hero.png";
 
 /*
@@ -45,7 +45,7 @@ export default function UserDashboard() {
     <div className={`sc-dashboard ${darkMode ? "sc-dashboard--dark" : ""}`}>
       <aside className="sc-sidebar">
         <button className="sc-brand" onClick={() => go("Home", "/home")} aria-label="Smart Community home">
-          <span className="sc-brand-mark"><img src={logo} alt="Yappy logo" className="sc-brand-logo" /></span>
+          <span className="sc-brand-mark"><img src="/assets/yappy-logo.png" alt="Yappy logo" className="sc-brand-logo" /></span>
           <span className="sc-yappy-text">Yappy</span>
         </button>
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/yappy-logo.png";
+// import logo from "./assets/yappy-logo.png";
 import { API_URL } from "./api";
 
 function Login() {
@@ -181,7 +181,7 @@ function Login() {
       <form className="yappy-login-box" onSubmit={handleLogin}>
         <div className="yappy-brand">
           <img
-            src={logo}
+            src="/assets/yappy-logo.png"
             alt="Yappy logo"
             className="yappy-brand-logo"
           />

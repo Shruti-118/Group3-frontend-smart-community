@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/yappy-Logo.png";
+// import logo from "./assets/yappy-Logo.png";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -202,7 +202,7 @@ function AdminDashboard() {
       {/* ---------- left side menu ---------- */}
       <div className="ad-sidebar">
         <div className="ad-sidebar-brand">
-          <img src={logo} alt="Yappy logo" />
+          <img src="/assets/yappy-logo.png" alt="Yappy logo" />
           <h2>Yappy</h2>
         </div>
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/yappy-logo.png";
+// import logo from "./assets/yappy-logo.png";
 import { API_URL } from "./api";
 
 function CreateAccount() {
@@ -217,7 +217,7 @@ function CreateAccount() {
         {/* Logo and brand name */}
         <div className="brand">
           <img
-            src={logo}
+            src="/assets/yappy-logo.png"
             alt="Yappy logo"
             className="brand-logo"
           />

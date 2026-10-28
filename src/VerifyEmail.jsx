@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/yappy-logo.png";
+// import logo from "./assets/yappy-logo.png";
 import { API_URL } from "./api";
 
 function VerifyEmail() {
@@ -87,7 +87,7 @@ function VerifyEmail() {
     <div className="verify-email-page">
       <div className="verify-email-box">
         <div className="verify-brand">
-          <img src={logo} alt="Yappy logo" className="verify-brand-logo" />
+          <img src="/assets/yappy-logo.png" alt="Yappy logo" className="verify-brand-logo" />
           <h1>Yappy</h1>
         </div>
 
