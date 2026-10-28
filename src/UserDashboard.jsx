@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UserDashboard.css";
-import logo from "./assets/yappy-Logo.png";
+import logo from "./assets/yappy-logo.png";
+import communityHero from "./assets/community-hero.png";
 
 /*
  * BACKGROUND IMAGE AREA:
@@ -102,10 +103,13 @@ export default function UserDashboard() {
                 <button className="sc-btn sc-btn-secondary" onClick={() => go("Explore", "/explore")}>Explore Communities</button>
               </div>
             </div>
-            {/* BACKGROUND IMAGE AREA — intentionally blank for your PNG.
-                Later: add <img src="/images/community-background.png" alt="" />
-                or set background-image on .sc-hero-art in UserDashboard.css. */}
-            <div className="sc-hero-art" aria-label="Reserved space for dashboard background image" />
+            <div className="sc-hero-art" aria-label="Reserved space for dashboard background image">
+              <img
+                src={communityHero}
+                alt="Cute community characters chatting together"
+                className="hero-image"
+              />
+            </div>
           </section>
 
           <section className="sc-features" aria-label="Community features">

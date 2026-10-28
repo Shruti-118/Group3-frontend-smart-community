@@ -324,15 +324,23 @@ margin-left: 16px;
     font-size: 20px}
 
 .sc-btn-secondary {
-background: transparent;
+    background: transparent;
     color: var(--text);
     border: 1px solid var(--text)}
 
  .sc-hero-art {
-min-height: 340px;
-    /* BACKGROUND PNG GOES HERE LATER: background: url('/images/community-background.png') center/contain no-repeat;
-     */}
-
+    min-height: 340px;  display: flex;
+    align-items: right;
+    justify-content: right;
+    min-width: 0;
+}
+.hero-image {
+  display: block;
+  width: 100%;
+  max-width: 540px;
+  height: auto;
+  object-fit: contain;
+}
  .sc-features {
 display: grid;
     grid-template-columns: repeat(4,minmax(0,1fr));

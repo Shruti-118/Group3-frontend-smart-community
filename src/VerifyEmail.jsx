@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./styles.css";
-import logo from "./assets/yappy-Logo.png";
+import logo from "./assets/yappy-logo.png";
 import { API_URL } from "./api";
 
 function VerifyEmail() {
