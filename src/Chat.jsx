@@ -1,187 +1,152 @@
 
 import { useCallback, useEffect, useState } from "react";
-import { Navlink } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Chat.css";
 
-const API_BASE = "https://smartcommunity-2jf8.onrender.com";
+const API_BASE_URL = "https://smartcommunity-2jf8.onrender.com";
 
+// Replace this with your actual channel ID if it is different.
 const CHANNEL_ID = "68b16109-4c80-439d-ad43-3eb6f3a033f1";
 
-// These keys must match the keys used by your login code.
-const TOKEN_KEY = "token";
-const USER_NAME_KEY = "userName";
-const USER_ID_KEY = "userId";
-
 export default function Chat() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const token = localStorage.getItem("token");
+  const currentUserId = localStorage.getItem("userId");
+  const currentUserName = localStorage.getItem("userName") || "You";
+
   const [isOpen, setIsOpen] = useState(true);
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+
+  // Join Your Friends popup state
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteSent, setInviteSent] = useState(false);
 
-  const token = localStorage.getItem(TOKEN_KEY);
-  const currentUserName =
-    localStorage.getItem(USER_NAME_KEY) || "";
-  const currentUserId =
-    localStorage.getItem(USER_ID_KEY) || "";
+  const isActive = (path) => location.pathname === path;
 
-  // Common headers for authenticated API requests
-  const getHeaders = useCallback(() => {
-    const savedToken = localStorage.getItem(TOKEN_KEY);
-
-    if (!savedToken) {
-      throw new Error(
-        "You are not logged in. Please log in first."
-      );
+  const loadMessages = useCallback(async () => {
+    if (!token) {
+      setLoading(false);
+      setError("Please log in to view your messages.");
+      return;
     }
 
-    return {
-      Authorization: `Bearer ${savedToken}`,
-      "Content-Type": "application/json",
-    };
-  }, []);
-
-  // GET: fetch channel message history
-  const loadMessages = useCallback(async () => {
     try {
       setError("");
 
       const response = await fetch(
-        `${API_BASE}/api/channels/${CHANNEL_ID}/messages?page=0&size=30`,
+        `${API_BASE_URL}/api/channels/${CHANNEL_ID}/messages?page=0&size=30`,
         {
           method: "GET",
-          headers: getHeaders(),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (!response.ok) {
         throw new Error(
-          `Could not load messages (${response.status}).`
+          response.status === 401
+            ? "Your session may have expired. Please log in again."
+            : "Unable to load messages. Please try again."
         );
       }
 
       const data = await response.json();
 
-      // Your API returns an object containing an items array.
-      if (!Array.isArray(data.items)) {
-        throw new Error(
-          "Unexpected response: message items were not found."
-        );
-      }
+      // Support either an array or a paginated response.
+      const fetchedMessages = Array.isArray(data)
+        ? data
+        : data.content || data.messages || [];
 
-      setMessages(data.items);
+      setMessages(
+        [...fetchedMessages].sort(
+          (a, b) =>
+            new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+        )
+      );
     } catch (err) {
-      setError(err.message || "Failed to load messages.");
+      setError(err.message || "Something went wrong while loading messages.");
     } finally {
       setLoading(false);
     }
-  }, [getHeaders]);
+  }, [token]);
 
-  // Load history when the component starts.
-  // Refresh every 10 seconds to check for new messages.
   useEffect(() => {
-    setLoading(true);
     loadMessages();
 
-    const intervalId = window.setInterval(() => {
-      loadMessages();
-    }, 10000);
+    if (!token) return undefined;
 
-    return () => window.clearInterval(intervalId);
-  }, [loadMessages]);
+    const intervalId = setInterval(loadMessages, 10000);
 
-  // POST: create a message in the selected channel
-  async function sendMessage(event) {
+    return () => clearInterval(intervalId);
+  }, [loadMessages, token]);
+
+  const sendMessage = async (event) => {
     event.preventDefault();
 
     const content = text.trim();
 
     if (!content || sending) return;
 
-    setSending(true);
-    setError("");
+    if (!token) {
+      setError("Please log in before sending a message.");
+      return;
+    }
 
     try {
+      setSending(true);
+      setError("");
+
       const response = await fetch(
-        `${API_BASE}/api/channels/${CHANNEL_ID}/messages`,
+        `${API_BASE_URL}/api/channels/${CHANNEL_ID}/messages`,
         {
           method: "POST",
-          headers: getHeaders(),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ content }),
         }
       );
 
       if (!response.ok) {
-        const details = await response.text();
-
-        throw new Error(
-          `Message could not be sent (${response.status}). ${
-            details || ""
-          }`
-        );
+        throw new Error("Unable to send your message. Please try again.");
       }
 
-      // The API returns the created message.
-      const createdMessage = await response.json();
-
-      // Use the server response as the source of truth.
-      setMessages((previous) => {
-        const alreadyExists = previous.some(
-          (message) => message.id === createdMessage.id
-        );
-
-        if (alreadyExists) return previous;
-
-        return [...previous, createdMessage];
-      });
-
       setText("");
-
-      // Refresh history to keep the UI in sync with the server.
       await loadMessages();
     } catch (err) {
-      setError(err.message || "Failed to send message.");
+      setError(err.message || "Message could not be sent.");
     } finally {
       setSending(false);
     }
-  }
+  };
 
-  // Delete from this browser's current view only.
-  // A real server-side deletion endpoint is not provided.
-  function deleteMessageLocally(messageId) {
-    const confirmed = window.confirm(
-      "Hide this message from your current chat view?"
+  const deleteMessageLocally = (messageId) => {
+    // This only hides the message in this browser's current UI.
+    // It does not delete the message from the server.
+    setMessages((previousMessages) =>
+      previousMessages.filter((message) => message.id !== messageId)
     );
+  };
 
-    if (!confirmed) return;
-
-    setMessages((previous) =>
-      previous.filter((message) => message.id !== messageId)
-    );
-  }
-
-  // Identify which messages belong to the logged-in user.
-  function isMyMessage(message) {
-    if (
+  const isMyMessage = (message) => {
+    return (
       currentUserId &&
       message.senderId &&
-      currentUserId === message.senderId
-    ) {
-      return true;
-    }
+      String(message.senderId) === String(currentUserId)
+    );
+  };
 
-    if (currentUserName && message.senderName) {
-      return currentUserName === message.senderName;
-    }
-
-    return false;
-  }
-
-  function formatTime(dateValue) {
+  const formatTime = (dateValue) => {
     if (!dateValue) return "";
 
     const date = new Date(dateValue);
@@ -192,136 +157,134 @@ export default function Chat() {
       hour: "2-digit",
       minute: "2-digit",
     });
-  }
+  };
 
-  if (!token) {
-    return (
-      <div className="chat-app">
-        <div className="chat-empty">
-          <h2>Please log in</h2>
-          <p>You need an authentication token to access chat.</p>
-        </div>
-      </div>
-    );
-  }
+  const handleInviteSubmit = (event) => {
+    event.preventDefault();
 
-  
-return (
-  <div className="community-layout">
-    {/* Dashboard sidebar */}
-    <aside className="community-sidebar">
-      <Navlink to="/home" className="community-brand">
-        <span className="brand-symbol"><img src="/assets/yappy-logo.png" alt="Yappy logo" className="sc-brand-logo" /></span>
-        <span className="brand-text">Yappy</span>
-      </Navlink>
+    if (!inviteEmail.trim()) return;
 
-      <div className="sidebar-navigation">
-        <Navlink
-          to="/home"
-          end
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? "active" : ""}`
-          }
-        >
-          <span className="nav-icon">⌂</span>
-          Home
-        </Navlink>
+    // Front-end demonstration only; no email is sent by this handler.
+    setInviteSent(true);
+    setInviteEmail("");
+  };
 
-        <Navlink
-          to="/servers"
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? "active" : ""}`
-          }
-        >
-          <span className="nav-icon">♧</span>
-          Servers
-        </Navlink>
+  const closeInvitePopup = () => {
+    setInviteOpen(false);
+    setInviteSent(false);
+    setInviteEmail("");
+  };
 
-        <Navlink
-          to="/chat"
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? "active" : ""}`
-          }
-        >
-          <span className="nav-icon">✉︎</span>
-          Messages
-        </Navlink>
-
-        <Navlink
-          to="/explore"
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? "active" : ""}`
-          }
-        >
-          <span className="nav-icon">⌕</span>
-          Explore
-        </Navlink>
-      </div>
-
-      <div className="sidebar-divider" />
-
-      <p className="quick-actions-title">Quick Actions</p>
-
-      <Navlink to="/servers" className="sidebar-quick-link">
-        <span className="nav-icon">＋</span>
-        Create Server
-      </Navlink>
-
-      <Navlink to="/servers" className="sidebar-quick-link">
-        <span className="nav-icon">♧</span>
-        Join with Code
-      </Navlink>
-
-      <div className="sidebar-bottom">
-        <div className="sidebar-decoration">✦</div>
-        <div className="sidebar-avatar">●</div>
-        <p>Connect. Chat. Build.</p>
-      </div>
-    </aside>
-
-    {/* Main chat content */}
-    <main className="community-content">
-      <header className="community-topbar">
-        <div>
-          <p className="topbar-eyebrow">YOUR COMMUNITY</p>
-          <h1>Messages</h1>
-          <p className="topbar-description">
-            Connect and keep the conversation going.
-          </p>
+  return (
+    <div className="community-layout">
+      {/* Sidebar */}
+      <aside className="community-sidebar">
+        <div className="sidebar-logo">
+          <div className="sidebar-logo-icon"><img src="/assets/yappy-logo.png" alt="Yappy logo" className="sc-brand-logo" /></div>
+          <span>Yappy</span>
         </div>
 
-        <button
-          type="button"
-          className="chat-close-button"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? "Close chat ×" : "Open chat +"}
-        </button>
-      </header>
-              
-        {/* Invite friends button */}
+        <p className="sidebar-section-label">MENU</p>
+
+        <nav className="sidebar-navigation">
+          <button
+            type="button"
+            className={`sidebar-link ${isActive("/home") ? "active" : ""}`}
+            onClick={() => navigate("/home")}
+          >
+            <span className="nav-icon">⌂</span>
+            <span>Home</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sidebar-link ${
+              isActive("/servers") ? "active" : ""
+            }`}
+            onClick={() => navigate("/servers")}
+          >
+            <span className="nav-icon">▦</span>
+            <span>Servers</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sidebar-link ${
+              isActive("/chat") ? "active" : ""
+            }`}
+            onClick={() => navigate("/chat")}
+          >
+            <span className="nav-icon">✉</span>
+            <span>Messages</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sidebar-link ${
+              isActive("/explore") ? "active" : ""
+            }`}
+            onClick={() => navigate("/explore")}
+          >
+            <span className="nav-icon">⌕</span>
+            <span>Explore</span>
+          </button>
+        </nav>
+
+        <div className="sidebar-bottom">
+          <div className="sidebar-user-avatar">
+            {currentUserName.charAt(0).toUpperCase()}
+          </div>
+
+          <div className="sidebar-user-info">
+            <span className="sidebar-user-name">{currentUserName}</span>
+            <span className="sidebar-user-status">Community member</span>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main page */}
+      <main className="community-content">
+        <header className="community-topbar">
+          <div>
+            <h1 className="page-title">Messages</h1>
+            <p className="page-subtitle">
+              Connect and keep the conversation going.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="topbar-profile"
+            onClick={() => navigate("/profile")}
+            aria-label="Open profile"
+            title="Profile"
+          >
+            {currentUserName.charAt(0).toUpperCase()}
+          </button>
+        </header>
+
+        {/* Join Your Friends button */}
         <div className="invite-friends-row">
           <button
             type="button"
             className="invite-friends-button"
             onClick={() => {
-              setInviteSent(false);
-              setInviteEmail("");
               setInviteOpen(true);
+              setInviteSent(false);
             }}
           >
-            👥 Join Your Friends
-            <span>↗</span>
+            <span>👥</span>
+            Join Your Friends
           </button>
         </div>
 
-        {/* Invite friends popup */}
+        {/* Invitation popup */}
         {inviteOpen && (
           <div
             className="invite-overlay"
-            onClick={() => setInviteOpen(false)}
+            onClick={closeInvitePopup}
           >
-            <div
+            <section
               className="invite-popup"
               role="dialog"
               aria-modal="true"
@@ -331,8 +294,8 @@ return (
               <button
                 type="button"
                 className="invite-close"
+                onClick={closeInvitePopup}
                 aria-label="Close invitation popup"
-                onClick={() => setInviteOpen(false)}
               >
                 ×
               </button>
@@ -342,23 +305,11 @@ return (
               <h2 id="invite-title">Join Your Friends</h2>
 
               <p className="invite-description">
-                Good conversations are better with friends.
-                Invite someone to join your community!
+                Invite a friend to connect with you on Smart Community.
               </p>
 
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-
-                  if (!inviteEmail.trim()) return;
-
-                  setInviteSent(true);
-                  setInviteEmail("");
-                }}
-              >
-                <label htmlFor="invite-email">
-                  Friend's email address
-                </label>
+              <form onSubmit={handleInviteSubmit}>
+                <label htmlFor="invite-email">Friend's email address</label>
 
                 <input
                   id="invite-email"
@@ -376,7 +327,7 @@ return (
                   type="submit"
                   className="invite-send-button"
                 >
-                  Send invitation ↗
+                  Send Invitation
                 </button>
               </form>
 
@@ -387,148 +338,154 @@ return (
               )}
 
               <p className="invite-footer">
-                Bring your people together.
+                Bring your friends into the conversation.
               </p>
-            </div>
+            </section>
           </div>
         )}
 
-
-      {!isOpen ? (
-        <section className="chat-closed-card">
-          <div className="closed-chat-icon">◉</div>
-          <h2>Your conversations are waiting</h2>
-          <p>Open your chat to view messages and continue talking.</p>
-          <button
-            type="button"
-            className="black-button"
-            onClick={() => setIsOpen(true)}
-          >
-            Open chat
-          </button>
-        </section>
-      ) : (
-        <section className="chat-panel">
-          <header className="chat-panel-header">
-            <div className="channel-avatar">●</div>
-
-            <div className="channel-heading">
-              <h2>Smart Community Chat</h2>
-              <p>
-                <span className="status-dot" />
-                Channel messages
-              </p>
+        {/* Chat area */}
+        <section className="chat-section">
+          <div className="chat-heading">
+            <div>
+              <h2>Conversation</h2>
+              <p>Your community messages in one place.</p>
             </div>
 
-            <button
-              type="button"
-              className="outline-button"
-              onClick={loadMessages}
-              disabled={loading}
-            >
-              {loading ? "Loading..." : "↻ Refresh"}
-            </button>
-          </header>
+            <div className="chat-heading-actions">
+              <button
+                type="button"
+                className="chat-action-button"
+                onClick={loadMessages}
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "↻ Refresh"}
+              </button>
+
+              <button
+                type="button"
+                className="chat-action-button"
+                onClick={() => setIsOpen((previous) => !previous)}
+              >
+                {isOpen ? "− Hide chat" : "+ Open chat"}
+              </button>
+            </div>
+          </div>
 
           {error && (
             <div className="chat-error" role="alert">
-              <span>{error}</span>
-              <button
-                type="button"
-                onClick={() => setError("")}
-                aria-label="Dismiss error"
-              >
-                ×
-              </button>
+              {error}
+
+              {!token && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/login")}
+                >
+                  Go to login
+                </button>
+              )}
             </div>
           )}
 
-          <div className="chat-messages">
-            {loading && messages.length === 0 ? (
-              <div className="chat-empty-state">
-                <div className="empty-state-icon">◌</div>
-                <h3>Loading messages</h3>
-                <p>Please wait while your history loads.</p>
+          {isOpen && (
+            <div className="chat-panel">
+              <div className="chat-panel-header">
+                <div className="chat-status-dot" />
+                <div>
+                  <h3>Community Chat</h3>
+                  <p>Messages refresh automatically</p>
+                </div>
               </div>
-            ) : messages.length === 0 ? (
-              <div className="chat-empty-state">
-                <div className="empty-state-icon">◉</div>
-                <h3>No messages yet</h3>
-                <p>Start a conversation with your community.</p>
-              </div>
-            ) : (
-              messages.map((message) => {
-                const mine = isMyMessage(message);
 
-                return (
-                  <div
-                    key={message.id}
-                    className={`message-row ${
-                      mine ? "my-row" : "their-row"
-                    }`}
-                  >
-                    <div className="message-bubble">
-                      <strong className="message-sender">
-                        {mine
-                          ? "You"
-                          : message.senderName || "Community member"}
-                      </strong>
-
-                      <p>{message.content}</p>
-
-                      <div className="message-meta">
-                        <small>
-                          {formatTime(
-                            message.createdAt || message.updatedAt
-                          )}
-                        </small>
-
-                        <button
-                          type="button"
-                          className="delete-message"
-                          onClick={() =>
-                            deleteMessageLocally(message.id)
-                          }
-                        >
-                          Hide
-                        </button>
-                      </div>
-                    </div>
+              <div className="chat-messages">
+                {loading && messages.length === 0 ? (
+                  <div className="chat-empty-state">
+                    Loading messages...
                   </div>
-                );
-              })
-            )}
-          </div>
+                ) : messages.length === 0 ? (
+                  <div className="chat-empty-state">
+                    <span className="empty-chat-icon">✉</span>
+                    <h3>No messages yet</h3>
+                    <p>Start the conversation with your community.</p>
+                  </div>
+                ) : (
+                  messages.map((message) => {
+                    const mine = isMyMessage(message);
 
-          <form
-            className="chat-input-area"
-            onSubmit={sendMessage}
-          >
-            <input
-              type="text"
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder="Write a message..."
-              aria-label="Write a message"
-              disabled={sending}
-            />
+                    return (
+                      <article
+                        className={`message-row ${
+                          mine ? "my-message-row" : ""
+                        }`}
+                        key={message.id}
+                      >
+                        <div className="message-avatar">
+                          {(message.senderName || "U")
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
 
-            <button
-              type="submit"
-              className="send-button"
-              disabled={sending || !text.trim()}
-            >
-              {sending ? "Sending..." : "Send ↑"}
-            </button>
-          </form>
+                        <div className="message-content">
+                          <div className="message-meta">
+                            <span className="message-sender">
+                              {mine
+                                ? "You"
+                                : message.senderName || "Community member"}
+                            </span>
 
-          <p className="chat-footer-note">
-            Be kind. Build stronger communities.
-          </p>
+                            <time className="message-time">
+                              {formatTime(
+                                message.createdAt || message.updatedAt
+                              )}
+                            </time>
+
+                            {mine && (
+                              <button
+                                type="button"
+                                className="message-hide-button"
+                                onClick={() =>
+                                  deleteMessageLocally(message.id)
+                                }
+                                title="Hide this message from your view"
+                                aria-label="Hide message"
+                              >
+                                ×
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="message-bubble">
+                            {message.content}
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })
+                )}
+              </div>
+
+              <form className="chat-input-area" onSubmit={sendMessage}>
+                <input
+                  type="text"
+                  value={text}
+                  onChange={(event) => setText(event.target.value)}
+                  placeholder="Write a message..."
+                  aria-label="Write a message"
+                  disabled={!token || sending}
+                />
+
+                <button
+                  type="submit"
+                  className="chat-send-button"
+                  disabled={!text.trim() || sending || !token}
+                >
+                  {sending ? "Sending..." : "Send ➤"}
+                </button>
+              </form>
+            </div>
+          )}
         </section>
-      )}
-    </main>
-  </div>
-);
-
+      </main>
+    </div>
+  );
 }
