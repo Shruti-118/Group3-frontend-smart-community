@@ -5,6 +5,7 @@ import ForgotPassword from "./ForgotPassword";
 import AdminDashboard from "./AdminDashboard";
 import UserDashboard from "./UserDashboard";
 import VerifyEmail from "./VerifyEmail";
+import Profile from "./Profile";
 
 
 // shows the page only if user is logged in
@@ -96,6 +97,12 @@ function App() {
             <VerifyEmail />
           </PublicRoute>
         }
+      />
+      <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } 
       />
     </Routes>
   );
