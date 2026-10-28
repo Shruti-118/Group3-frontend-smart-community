@@ -57,7 +57,7 @@
 .profile-back-btn:hover,
 .profile-dashboard-btn:hover {
   background: #f0f1ff;
-  border-color: #7775ed;
+  border-color: #000001;
 }
 
 /* Main content */
@@ -270,7 +270,7 @@
 
 .profile-edit-btn:hover,
 .profile-save-btn:hover {
-  background: #5b52d0;
+  background: #4e4d5a;
 }
 
 /* Form fields */
@@ -373,7 +373,7 @@
 
 .profile-save-btn {
   border: none;
-  background: #7168e8;
+  background: #000000;
   color: #ffffff;
 }
 
