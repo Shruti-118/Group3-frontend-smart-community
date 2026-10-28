@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./profile.css";
-import logo from "./assets/yappy-logo1.png";
 
 
 // If you have an api.js file, import API_URL when your backend is ready.
@@ -269,7 +268,7 @@ function Profile() {
           onClick={() => navigate("/home")}
           aria-label="Go to dashboard"
         >
-          <img src={logo} alt="Yappy logo" />
+          <img src="/assets/yappy-logo.png" alt="Yappy logo" />
           <span>Yappy</span>
         </button>
 
