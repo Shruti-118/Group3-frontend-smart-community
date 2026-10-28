@@ -4,11 +4,6 @@ import "./UserDashboard.css";
 // import logo from "./assets/yappy-logo.png";
 import communityHero from "./assets/community-hero.png";
 
-/*
- * BACKGROUND IMAGE AREA:
- * The hero illustration is intentionally blank. Add your PNG later in the
- * .sc-hero-art CSS background, or place an <img> inside .sc-hero-art.
- */
 const features = [
   { icon: "♟", color: "purple", title: "Create or Join Servers", text: "Find your people or build your own community.", route: "/servers" },
   { icon: "•••", color: "green", title: "Real-Time Chat", text: "Stay connected with channels and direct messages.", route: "/chat" },
