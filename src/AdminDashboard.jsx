@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./AdminDashboard.css";
+import { useNavigate } from "react-router-dom";
 
 const initialModerators = [
   "alex@example.com",
@@ -22,6 +23,20 @@ const menuItems = [
 ];
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+  
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("role");
+  localStorage.removeItem("user");
+
+  navigate("/", { replace: true });
+};
+
   const [activeSection, setActiveSection] = useState("dashboard");
   const [moderators, setModerators] = useState(() => {
     try {
@@ -412,13 +427,17 @@ export default function AdminDashboard() {
             </h1>
             <p>Manage your community from one place.</p>
           </div>
-
+          
           <div className="admin-topbar-right">
             <span className="admin-topbar-status">
               <span className="admin-status-dot" />
               Admin workspace
             </span>
             <div className="admin-topbar-avatar">A</div>
+            <button type="button" className="admin-logout-top-btn"
+              onClick={handleLogout}>
+              Logout <span aria-hidden="true">↗</span>
+            </button>
           </div>
         </header>
 
@@ -499,7 +518,7 @@ export default function AdminDashboard() {
         </div>
 
         <footer className="admin-page-footer">
-          Smart Community Admin Dashboard
+          Yappy Admin Dashboard
           <span>Black · White · Grey</span>
         </footer>
       </main>
