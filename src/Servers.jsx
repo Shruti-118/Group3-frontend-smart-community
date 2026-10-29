@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Servers.css";
-import logo from "./assets/yappy-logo1.png";
 
 const icons = {
   home: "⌂",
@@ -308,7 +307,7 @@ function Servers() {
           className="servers-brand"
           onClick={() => navigate("/servers")}
         >
-          <span className="servers-brand-icon"><img src={logo} alt="Yappy logo" className="brand-logo" /></span>
+          <span className="servers-brand-icon"><img src="/assets/yappy-logo.png"  alt="Yappy logo" className="brand-logo" /></span>
 
           <span>
             <strong>Yappy</strong>
