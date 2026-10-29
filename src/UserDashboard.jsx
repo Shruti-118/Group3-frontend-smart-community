@@ -7,8 +7,8 @@ import communityHero from "./assets/community-hero.png";
 const features = [
   { icon: "♟", color: "purple", title: "Create or Join Servers", text: "Find your people or build your own community.", route: "/servers" },
   { icon: "•••", color: "green", title: "Real-Time Chat", text: "Stay connected with channels and direct messages.", route: "/chat" },
-  { icon: "✓", color: "yellow", title: "Safe & Friendly", text: "AI-powered moderation helps keep our community positive.", route: "/explore" },
-  { icon: "ϟ", color: "pink", title: "More Features", text: "Files, reactions, roles and more — all in one place.", route: "/explore" },
+  { icon: "✓", color: "yellow", title: "Safe & Friendly", text: "AI-powered moderation helps keep our community positive.", route: "/servers" },
+  { icon: "ϟ", color: "pink", title: "More Features", text: "Files, reactions, roles and more — all in one place.", route: "/servers" },
 ];
 
 export default function UserDashboard() {
@@ -33,7 +33,7 @@ export default function UserDashboard() {
 
   function submitSearch(e) {
     e.preventDefault();
-    navigate(`/explore?search=${encodeURIComponent(search.trim())}`);
+    navigate(`/servers?search=${encodeURIComponent(search.trim())}`);
   }
 
   return (
@@ -48,14 +48,14 @@ export default function UserDashboard() {
           <button className={active === "Home" ? "active" : ""} onClick={() => go("Home", "/home")}><span>⌂</span>Home</button>
           <button className={active === "Servers" ? "active" : ""} onClick={() => go("Servers", "/servers")}><span>♧</span>Servers</button>
           <button className={active === "Messages" ? "active" : ""} onClick={() => go("Messages", "/chat")}><span>✉︎</span>Messages</button>
-          <button className={active === "Explore" ? "active" : ""} onClick={() => go("Explore", "/explore")}><span>⌕</span>Explore</button>
+          <button className={active === "Explore" ? "active" : ""} onClick={() => go("Explore", "/servers")}><span>⌕</span>Explore</button>
         </nav>
 
         <div className="sc-side-divider" />
         <p className="sc-side-label">Quick Actions</p>
         <div className="sc-quick">
-          <button onClick={() => go("Create Server", "/servers/create")}><span>＋</span>Create Server</button>
-          <button onClick={() => go("Join Server", "/servers/join")}><span>♧</span>Join with Code</button>
+          <button onClick={() => go("Create Server", "/servers")}><span>＋</span>Create Server</button>
+          <button onClick={() => go("Join Server", "/servers")}><span>♧</span>Join with Code</button>
         </div>
         <div className="sc-side-decoration" aria-hidden="true"><span>✦</span><i>◕</i></div>
       </aside>
@@ -95,7 +95,7 @@ export default function UserDashboard() {
               <p className="sc-hero-description">Connect, chat, and build something great together. Create your own community or join one today!</p>
               <div className="sc-hero-actions">
                 <button className="sc-btn sc-btn-primary" onClick={() => go("Servers", "/servers")}>Get Started <span>→</span></button>
-                <button className="sc-btn sc-btn-secondary" onClick={() => go("Explore", "/explore")}>Explore Communities</button>
+                <button className="sc-btn sc-btn-secondary" onClick={() => go("Explore", "/servers")}>Explore Communities</button>
               </div>
             </div>
             <div className="sc-hero-art" aria-label="Reserved space for dashboard background image">
