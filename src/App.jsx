@@ -7,6 +7,7 @@ import UserDashboard from "./UserDashboard";
 import VerifyEmail from "./VerifyEmail";
 import Profile from "./Profile";
 import Chat from "./Chat";
+import Servers from "./Servers";
 
 
 // shows the page only if user is logged in
@@ -108,6 +109,12 @@ function App() {
       <Route path="/chat" element={
           <ProtectedRoute>
             <Chat />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="/servers" element={
+          <ProtectedRoute>
+            <Servers />
           </ProtectedRoute>
         } 
       />
