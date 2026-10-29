@@ -2,8 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Chat.css";
-
-const API_BASE_URL = "https://smartcommunity-2jf8.onrender.com";
+import { API_URL } from "./api";
 
 // Replace this with your actual channel ID if it is different.
 const CHANNEL_ID = "68b16109-4c80-439d-ad43-3eb6f3a033f1";
@@ -41,7 +40,7 @@ export default function Chat() {
       setError("");
 
       const response = await fetch(
-        `${API_BASE_URL}/api/channels/${CHANNEL_ID}/messages?page=0&size=30`,
+        `${API_URL}/api/channels/${CHANNEL_ID}/messages?page=0&size=30`,
         {
           method: "GET",
           headers: {
@@ -106,7 +105,7 @@ export default function Chat() {
       setError("");
 
       const response = await fetch(
-        `${API_BASE_URL}/api/channels/${CHANNEL_ID}/messages`,
+        `${API_URL}/api/channels/${CHANNEL_ID}/messages`,
         {
           method: "POST",
           headers: {

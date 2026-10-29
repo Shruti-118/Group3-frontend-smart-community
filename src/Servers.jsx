@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Servers.css";
+import { API_URL } from "./api";
 
 const icons = {
   home: "⌂",
